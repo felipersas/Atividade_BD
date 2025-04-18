@@ -64,3 +64,38 @@ INSERT INTO curtidas (id_usuario_origem, id_usuario_destino, data_curtida) VALUE
 (4, 3, '2024-04-04'),
 (5, 1, '2024-04-05'),
 (1, 5, '2024-04-06');
+
+-- Consultas
+
+-- a) Nome de cada usuário e seus interesses (INNER JOIN)
+SELECT u.nome AS usuario, i.descricao AS interesse
+FROM usuarios u
+INNER JOIN usuarios_interesses ui ON u.id = ui.id_usuario
+INNER JOIN interesses i ON i.id = ui.id_interesse;
+
+-- b) Todos os usuários e seus interesses (LEFT JOIN)
+SELECT u.nome AS usuario, i.descricao AS interesse
+FROM usuarios u
+LEFT JOIN usuarios_interesses ui ON u.id = ui.id_usuario
+LEFT JOIN interesses i ON i.id = ui.id_interesse;
+
+-- c) Pares de curtidas recíprocas
+SELECT u1.nome AS usuario_a, u2.nome AS usuario_b
+FROM curtidas c1
+JOIN curtidas c2 ON c1.id_usuario_origem = c2.id_usuario_destino AND c1.id_usuario_destino = c2.id_usuario_origem
+JOIN usuarios u1 ON u1.id = c1.id_usuario_origem
+JOIN usuarios u2 ON u2.id = c1.id_usuario_destino
+WHERE c1.id_usuario_origem < c1.id_usuario_destino;
+
+-- d) Quantidade de curtidas recebidas por cada usuário
+SELECT u.nome, COUNT(c.id) AS curtidas_recebidas
+FROM usuarios u
+LEFT JOIN curtidas c ON u.id = c.id_usuario_destino
+GROUP BY u.id
+ORDER BY curtidas_recebidas DESC;
+
+-- e) Cidades com maior número de usuários
+SELECT cidade, COUNT(*) AS total_usuarios
+FROM usuarios
+GROUP BY cidade
+ORDER BY total_usuarios DESC;
